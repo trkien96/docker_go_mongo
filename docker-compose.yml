@@ -1,0 +1,43 @@
+version: "3"
+
+services:
+  mongo:
+    image: mongo:latest
+    container_name: mongo_db
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: $DB_USERNAME
+      MONGO_INITDB_ROOT_PASSWORD: $DB_PASSWORD
+      MONGO_INITDB_DATABASE: $DB_DATABASE
+    ports:
+      - $DB_PORT:$DB_PORT
+    # expose:
+    #   - $MONGO_PORT
+    volumes:
+      - ./database/mongodata:/data/db
+      - ./init-mongo.sh:/docker-entrypoint-initdb.d/init-mongo.sh:ro
+    networks:
+      - mongo-golang
+    
+  # mongo_app:
+  #   image: mongo_golang
+  #   container_name: mongo_app
+  #   build: .
+  #   restart: unless-stopped
+  #   tty: true
+  #   volumes:
+  #     - .:/app
+  #   ports:
+  #     - $SERVER_PORT:$SERVER_PORT
+    # expose:
+    #   - $SERVER_PORT
+    # networks:
+    #   - mongo-golang
+
+networks:
+  mongo-golang:
+    driver: bridge
+
+volumes:
+    mongodata:
